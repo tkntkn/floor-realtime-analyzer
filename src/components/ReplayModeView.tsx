@@ -1,5 +1,6 @@
 import cn from "classnames";
 import { Recording } from "../domains/recording";
+import { FloorImage } from "./FloorImage";
 
 export function ReplayModeView(props: { recording: Recording }) {
   return (
@@ -15,7 +16,14 @@ export function ReplayModeView(props: { recording: Recording }) {
           </div>
         ))}
       </div>
-      <div className="RealtimeModeView-dataList"></div>
+      <div>
+        {props.recording.floors.map(({ url, data }) => (
+          <div key={url}>
+            <FloorImage data={data} />
+            <span>{url}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

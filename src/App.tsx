@@ -1,9 +1,7 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import cn from "classnames";
+import { ChangeEvent, useCallback, useState } from "react";
 import "./App.css";
 import { downloadBlob } from "./utils/binary";
 import { Recording, createRecordingFile, loadRecordingFile } from "./domains/recording";
-import { Floor, parseFloor } from "./domains/floor";
 import { RealtimeModeView } from "./components/RealtimeModeView";
 import { ReplayModeView } from "./components/ReplayModeView";
 
@@ -58,46 +56,6 @@ export function App() {
         ))}
       </ol>
       {replayModeRecording ? <ReplayModeView recording={replayModeRecording} /> : <RealtimeModeView onRecordingEnd={handleRecordingEnd} />}
-
-      <FloorView />
-    </div>
-  );
-}
-
-export function FloorView() {
-  const [floors, setFloors] = useState<Floor[]>([]);
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/");
-    socket.addEventListener("message", (event) => {
-      const floor = parseFloor(event.data as string);
-      setFloors((floors) => [...floors, floor]);
-    });
-    return () => socket.close();
-  }, []);
-
-  const lastFloor = floors.at(-1);
-
-  if (!lastFloor) {
-    return (
-      <div className="Floor">
-        <h2>Floor</h2>
-        <p>No Data</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="Floor">
-      <h2>Floor</h2>
-      {lastFloor.rows.map((row, index) => (
-        <div key={index} className="Floor_row">
-          {row.map((cell, index) => (
-            <div key={index} className="Floor_cell" style={{ backgroundColor: `rgba(0,0,0,${cell / 1000})` }}></div>
-          ))}
-        </div>
-      ))}
-      <h3>Last Message</h3>
-      <p className="App_lastFloorRaw">{lastFloor?.string}</p>
     </div>
   );
 }

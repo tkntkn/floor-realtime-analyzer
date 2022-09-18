@@ -1,10 +1,15 @@
 import JSZip from "jszip";
+import { FloorImageData } from "./floor";
 
 export type Recording = {
   title: string;
   videos: Array<{
     device: MediaDeviceInfo;
     blob: Blob;
+  }>;
+  floors: Array<{
+    url: string;
+    data: FloorImageData[];
   }>;
 };
 
@@ -25,6 +30,7 @@ export async function createRecordingFile(recording: Recording) {
     JSON.stringify({
       title: recording.title,
       videos: recording.videos.map(({ device }) => ({ device })),
+      floors: recording.floors,
     })
   );
   recording.videos.forEach((video, index) => {

@@ -1,0 +1,8 @@
+.FloorImage_row {
+  display: flex;
+}
+
+.FloorImage_cell {
+  width: 5px;
+  height: 5px;
+}
