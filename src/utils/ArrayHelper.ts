@@ -1,5 +1,5 @@
 export function longZip<T, U>(a1: T[], a2: U[]) {
-  const zipped: [T, U][] = [];
+  const zipped: [T | undefined, U | undefined][] = [];
   for (let i = 0; i < Math.max(a1.length, a2.length); i++) {
     zipped.push([a1[i], a2[i]]);
   }

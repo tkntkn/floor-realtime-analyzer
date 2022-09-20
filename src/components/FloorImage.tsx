@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./FloorImage.css";
 import { type FloorImageData, parseFloorImage } from "../domains/floor";
+import { map } from "../utils/MathHelper";
 
 export function FloorImage(props: { socket: WebSocket } | { socket?: undefined; data: FloorImageData[] }) {
   const [floor, setFloor] = useState<FloorImageData>();
@@ -33,7 +34,7 @@ export function FloorImage(props: { socket: WebSocket } | { socket?: undefined; 
           {floor.rows.map((row, index) => (
             <div key={index} className="FloorImage_row">
               {row.map((cell, index) => (
-                <div key={index} className="FloorImage_cell" style={{ backgroundColor: `rgba(0,0,0,${cell / 1000})` }}></div>
+                <div key={index} className="FloorImage_cell" style={{ backgroundColor: `rgba(0,0,0,${map(cell, 0, 200000, 0, 1)})` }}></div>
               ))}
             </div>
           ))}
