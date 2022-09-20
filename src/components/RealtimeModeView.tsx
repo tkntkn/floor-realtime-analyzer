@@ -1,11 +1,13 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import cn from "classnames";
 import { recordStreams } from "../utils/MediaRecorderHelper";
 import { Recording } from "../domains/recording";
 import { useStartResume } from "../utils/hooks";
 import { shortZip } from "../utils/ArrayHelper";
 import { FloorImage } from "./FloorImage";
 import { recordSockets } from "../domains/floor";
+import { AiOutlinePlusCircle, AiOutlineClose } from "react-icons/ai";
+import { BsFillRecordFill, BsFillStopFill } from "react-icons/bs";
+import classNames from "classnames";
 
 type VideoSource = { device: MediaDeviceInfo; stream: MediaStream };
 function useVideoSourceController() {
@@ -107,52 +109,86 @@ export function RealtimeModeView(props: { onRecordingEnd(recording: Recording): 
   });
 
   return (
-    <div className={cn("RealtimeModeView", { "is-recordinging": isRecording })}>
-      <h2>Realtime Mode</h2>
-      <h3>Controller</h3>
-      <h4>Record</h4>
-      <button onClick={startRecord}>Record</button>
-      <button onClick={triggerStopRecord}>Stop</button>
-      <h4>Add Source</h4>
-      <div>
-        <select className="RealtimeModeView-videoSourceDeviceSelect" value={selectedVideoDevice?.deviceId} onChange={handleVideoDeviceSelectChange}>
-          <option value={undefined}></option>
-          {availableVideoDevices.map((device) => {
-            if (videoSources.some((source) => source.device.deviceId === device.deviceId)) {
-              return null;
-            } else {
-              return (
-                <option key={device.deviceId} value={device.deviceId}>
-                  {device.label}
-                </option>
-              );
-            }
-          })}
-        </select>
-        <button className="RealtimeModeView-videoSourceDeviceSelectAdd" onClick={handleAddVideoSourceClick}>
-          Add Video Source
-        </button>
+    <div className="RealtimeModeView">
+      <div className="text-lg m-2.5 border-b-2 border-gray-800 flex items-center justify-between">
+        <h2>Realtime Mode</h2>
       </div>
-      <div>
-        <input type="text" placeholder="ws://localhost:8080/" value={floorSourceUrl} onChange={(event) => setFloorSourceUrl(event.currentTarget.value)} />
-        <button onClick={handleAddFloorSourceClick}>Add Floor Source</button>
+      <div className={classNames("flex justify-evenly m-2 p-2 rounded-lg", { "bg-red-100": isRecording, "bg-blue-100": !isRecording })}>
+        <span>
+          {isRecording ? (
+            <button onClick={triggerStopRecord} className="flex items-center">
+              <span>Stop Recording: </span>
+              <span className="text-2xl text-blue-500">
+                <BsFillStopFill />
+              </span>
+            </button>
+          ) : (
+            <button onClick={startRecord} className="flex items-center">
+              <span>Start Recording: </span>
+              <span className="text-2xl text-red-500">
+                <BsFillRecordFill />
+              </span>
+            </button>
+          )}
+        </span>
+        <hr className="inline-block w-px bg-blue-900" />
+        <details>
+          <summary className="relative z-10 flex items-center">
+            <AiOutlinePlusCircle className="text-base" />
+            <span className="ml-1">Add Source</span>
+          </summary>
+          <div className="absolute rounded-md border-gray-800 border pt-8 p-3 -translate-x-2 -translate-y-7 bg-gray-200">
+            <h3 className="font-bold mb-1">Video Source</h3>
+            <div>
+              <select className="RealtimeModeView-videoSourceDeviceSelect w-60 border border-gray-800 px-1 rounded-md" value={selectedVideoDevice?.deviceId} onChange={handleVideoDeviceSelectChange}>
+                <option value={undefined}></option>
+                {availableVideoDevices.map((device) => {
+                  if (videoSources.some((source) => source.device.deviceId === device.deviceId)) {
+                    return null;
+                  } else {
+                    return (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label}
+                      </option>
+                    );
+                  }
+                })}
+              </select>
+              <button className="RealtimeModeView-videoSourceDeviceSelectAdd font-thin ml-3 border border-gray-800 px-3 rounded-md shrink-0 bg-gray-800 text-white" onClick={handleAddVideoSourceClick}>
+                Add
+              </button>
+            </div>
+            <h3 className="font-bold mt-2 mb-1">Floor Source</h3>
+            <div>
+              <input type="text" className="w-60 border border-gray-800 px-2 rounded-md" placeholder="ws://localhost:8080/" value={floorSourceUrl} onChange={(event) => setFloorSourceUrl(event.currentTarget.value)} />
+              <button onClick={handleAddFloorSourceClick} className="font-thin ml-3 border border-gray-800 px-3 rounded-md shrink-0 bg-gray-800 text-white">
+                Add
+              </button>
+            </div>
+          </div>
+        </details>
       </div>
-      <h2>Viewer</h2>
-      <div>
+      <div className="p-2 grid grid-cols-3 gap-3">
         {videoSources.map((source) => (
-          <div key={source.device.deviceId}>
-            <button onClick={() => removeVideoSource(source)}>Remove</button>
-            <video autoPlay ref={(element) => element && (element.srcObject = source.stream)} style={{ width: 100 }}></video>
-            <span>{source.device.label}</span>
+          <div key={source.device.deviceId} className="border border-gray-800 col-span-1">
+            <div className="flex justify-between">
+              <span className="font-bold">Device Label: {source.device.label}</span>
+              <button onClick={() => removeVideoSource(source)}>
+                <AiOutlineClose />
+              </button>
+            </div>
+            <video autoPlay ref={(element) => element && (element.srcObject = source.stream)} className="w-1/2"></video>
           </div>
         ))}
-      </div>
-      <div>
-        {floorSources.map((source, index) => (
-          <div key={index}>
-            <button onClick={() => removeFloorSource(source)}>Remove</button>
+        {floorSources.map((source) => (
+          <div key={source.socket.url} className="border border-gray-800 col-span-1 overflow-hidden">
+            <div className="flex justify-between">
+              <span className="font-bold">URL: {source.socket.url}</span>
+              <button onClick={() => removeFloorSource(source)}>
+                <AiOutlineClose />
+              </button>
+            </div>
             <FloorImage socket={source.socket} />
-            <span>{source.socket.url}</span>
           </div>
         ))}
       </div>

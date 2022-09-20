@@ -1,3 +1,10 @@
-body {
-  margin: 0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+summary::-webkit-details-marker {
+  display: none;
+}
+summary {
+  list-style: none;
 }
