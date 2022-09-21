@@ -10,7 +10,7 @@ That's it.
 ##  considerations
 - .json -> .json + .dat
 - .webm -> .mp4 ( ok for being converted in the external apps)
-- `wss` for inter-host communication?
+- `wss` for inter-host communication? -> which can be addressed in `floor-broker` by accomodating `SSL` in the server side
 
 ## future
 - inter-host communication
