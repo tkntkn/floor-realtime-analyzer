@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./FloorImage.css";
 import { type FloorImageData, parseFloorImage } from "../domains/floor";
 import { map } from "../utils/MathHelper";
+import FloorWorker from "../domains/FloorWorker?worker&inline"
 
 export function FloorImage(props: { socket: WebSocket } | { socket?: undefined; data: FloorImageData[] }) {
   const [floor, setFloor] = useState<FloorImageData>();
@@ -18,7 +19,7 @@ export function FloorImage(props: { socket: WebSocket } | { socket?: undefined; 
       );
       return () => ac.abort();
     } else {
-      const worker = new Worker(new URL("../domains/FloorWorker.ts", import.meta.url));
+      const worker = new FloorWorker();
       worker.postMessage(props.data);
       worker.addEventListener("message", (event) => {
         setFloor(event.data as FloorImageData);
