@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./FloorImage.css";
 import { type FloorImageData, parseFloorImage } from "../domains/floor";
 import { map } from "../utils/MathHelper";
-import FloorWorker from "../domains/FloorWorker?worker&inline"
+import FloorWorker from "../domains/FloorWorker?worker&inline";
 
 export function FloorImage(props: { socket: WebSocket } | { socket?: undefined; data: FloorImageData[] }) {
   const [floor, setFloor] = useState<FloorImageData>();

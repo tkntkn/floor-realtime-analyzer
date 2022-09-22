@@ -9,10 +9,11 @@ self.addEventListener("message", (event) => {
     while (true) {
       const pastTime = +new Date() - startTime;
       if (pastTime > dataTime) {
+        // 以下の postMessage を while文 の後ろに持っていくとDCEにより動かなくなる
+        self.postMessage(image);
         break;
       }
     }
-    self.postMessage(image);
   }
   self.close();
 });
