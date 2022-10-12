@@ -1,8 +1,6 @@
 # floor-realtime-analyzer
 
 ## usage
-open [https://sensorium-pj.github.io/floor-realtime-analyzer/](https://sensorium-pj.github.io/floor-realtime-analyzer/)
-That's it.
 
 ## pipeline
 (`websocket`) ----> `floor-realtime-analyzer` ----> .zip(.webm+.json)
